@@ -1,0 +1,56 @@
+/* Table styles */
+
+.table-container {
+  overflow-x: auto;
+  background-color: #111827;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+#heroesTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #1f2937;
+  text-align: left;
+}
+
+th {
+  background-color: #1f2937;
+  cursor: pointer;
+  user-select: none;
+}
+
+th:hover {
+  background-color: #374151;
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.hero-name-cell {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #60a5fa;
+}
+
+.hero-name-cell:hover {
+  color: #93c5fd;
+}
+
+img {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+}

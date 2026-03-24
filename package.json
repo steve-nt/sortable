@@ -1,0 +1,21 @@
+{
+  "name": "sortable",
+  "version": "1.0.0",
+  "description": "A highly optimized Vanilla JavaScript (ES2026) application for sorting, filtering, and paginating superhero data. This application strictly complies with modern JavaScript paradigms and \"Functional Core, Imperative Shell\" Clean Architecture principles, avoiding heavy external frameworks (e.g., React, Vue). Speed and performance are guaranteed through careful debouncing and immutability.",
+  "main": "script.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "npx servor . index.html 8080 --reload",
+    "test": "node --test tests/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://platform.zone01.gr/git/chbaikas/sortable.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}

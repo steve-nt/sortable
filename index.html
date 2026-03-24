@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sortable Heroes</title>
+  <link rel="stylesheet" href="src/ui/layout.css" />
+  <link rel="stylesheet" href="src/ui/table.css" />
+  <link rel="stylesheet" href="src/ui/modal.css" />
+</head>
+<body>
+
+  <main class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <h1>Superhero Database</h1>
+    </header>
+
+    <!-- Controls -->
+    <section class="controls">
+
+      <!-- Search input -->
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search heroes..."
+      />
+
+      <!-- Page size select -->
+      <select id="pageSizeSelect">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="all">All</option>
+      </select>
+
+    </section>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table id="heroesTable">
+        <thead>
+          <tr>
+            <th data-field="icon">Icon</th>
+            <th data-field="name">Name</th>
+            <th data-field="fullName">Full Name</th>
+            <th data-field="powerstats.intelligence">Intelligence</th>
+            <th data-field="powerstats.strength">Strength</th>
+            <th data-field="powerstats.speed">Speed</th>
+            <th data-field="powerstats.durability">Durability</th>
+            <th data-field="powerstats.power">Power</th>
+            <th data-field="powerstats.combat">Combat</th>
+            <th data-field="race">Race</th>
+            <th data-field="gender">Gender</th>
+            <th data-field="height">Height</th>
+            <th data-field="weight">Weight</th>
+            <th data-field="placeOfBirth">Place of Birth</th>
+            <th data-field="alignment">Alignment</th>
+          </tr>
+        </thead>
+
+        <!-- Rows will be inserted dynamically -->
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <footer class="pagination">
+      <button id="prevBtn">Previous</button>
+      <span id="pageInfo">Page 1</span>
+      <span id="maxPageInfo"></span>
+      <button id="nextBtn">Next</button>
+    </footer>
+
+    <!-- Hero detail modal (bonus feature) -->
+    <div id="heroModal" class="hero-modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button class="modal-close">✕</button>
+        <div class="hero-detail-container">
+          <div class="hero-image-section">
+            <img id="heroImage" src="" alt="Hero image" />
+          </div>
+          <div class="hero-info-section">
+            <h2 id="heroName"></h2>
+            <p id="heroFullName"></p>
+            <div class="hero-stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">Intelligence</span>
+                <span id="modalIntelligence">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Strength</span>
+                <span id="modalStrength">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Speed</span>
+                <span id="modalSpeed">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Durability</span>
+                <span id="modalDurability">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Power</span>
+                <span id="modalPower">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Combat</span>
+                <span id="modalCombat">-</span>
+              </div>
+            </div>
+            <div class="hero-bio">
+              <p><strong>Race:</strong> <span id="modalRace">Unknown</span></p>
+              <p><strong>Gender:</strong> <span id="modalGender">Unknown</span></p>
+              <p><strong>Height:</strong> <span id="modalHeight">Unknown</span></p>
+              <p><strong>Weight:</strong> <span id="modalWeight">Unknown</span></p>
+              <p><strong>Place of Birth:</strong> <span id="modalBirth">Unknown</span></p>
+              <p><strong>Alignment:</strong> <span id="modalAlignment">Unknown</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
