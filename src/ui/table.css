@@ -1,7 +1,8 @@
 /* Table styles */
 
 .table-container {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 65vh;
   background-color: #111827;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -21,7 +22,13 @@ td {
 }
 
 th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background-color: #1f2937;
+  padding: 12px 10px;
+  border-bottom: 1px solid #1f2937;
+  text-align: left;
   cursor: pointer;
   user-select: none;
 }
