@@ -5,47 +5,83 @@ body {
   font-family: Arial, sans-serif;
   background-color: #0f172a;
   color: #ffffff;
+  overflow-x: hidden;
 }
 
+/* Wider layout (BIG improvement) */
 .app {
-  width: min(1200px, 95%);
-  margin: 30px auto;
+  width: min(1600px, 95%); /* was 1200 → now better */
+  margin: 20px auto;
+  padding: 0 12px;
 }
 
 /* Header */
 .header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .header h1 {
   margin: 0;
+  font-size: 28px;
 }
 
-/* Controls section */
+/* Controls */
 .controls {
   display: flex;
   justify-content: center;
   gap: 12px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-/* Form inputs */
+/* Inputs */
 input,
 select {
   padding: 10px;
   border-radius: 8px;
   border: none;
   font-size: 14px;
+  outline: none;
+
+  background-color: #1f2937;
+  color: white;
 }
 
+/* Placeholder */
+input::placeholder {
+  color: #9ca3af;
+}
+
+/* Focus */
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+/* Input sizing */
 input {
   width: 260px;
+  max-width: 90%;
 }
 
 select {
   cursor: pointer;
+}
+
+#searchFieldSelect,
+#searchOperatorSelect,
+#pageSizeSelect {
+  min-width: 130px;
+}
+
+#resetBtn {
+  background-color: #334155;
+}
+
+#resetBtn:hover:not(:disabled) {
+  background-color: #475569;
 }
 
 /* Buttons */
@@ -56,11 +92,16 @@ button {
   background-color: #2563eb;
   color: white;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.05s ease;
 }
 
 button:hover:not(:disabled) {
   background-color: #1d4ed8;
+}
+
+/* Click feedback */
+button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 button:disabled {
@@ -68,12 +109,18 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Pagination footer */
+/* Pagination */
 .pagination {
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
+  padding: 10px 0;
+  font-size: 15px;
+}
+
+.pagination span {
+  font-weight: bold;
 }

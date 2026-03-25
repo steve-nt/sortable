@@ -1,0 +1,760 @@
+/* ============================================================================
+   TRACK B: PRESENTATION UI & COMPONENT ARCHITECTURE
+   Modern CSS Foundation for Superhero Database Application
+   ============================================================================ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   RESET & TYPOGRAPHY BASELINE
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Universal reset: normalize browser defaults and establish baseline */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* B.1: Premium color scheme and typography foundation */
+body {
+  /* Dark, sophisticated background gradient */
+  background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 50%, #0d1525 100%);
+  /* Modern font stack with fallbacks */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+  min-height: 100vh;
+  /* Smooth scrolling experience */
+  scroll-behavior: smooth;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   B.1: MAIN LAYOUT & STRUCTURE
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Main app container: responsive width with max-width constraint */
+.app {
+  width: min(1400px, 98%);
+  margin: 40px auto;
+  padding: 0 12px;
+}
+
+/* B.1: Header section with gradient accent */
+.header {
+  text-align: center;
+  margin-bottom: 45px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%) 1;
+}
+
+.header-content {
+  animation: slideDown 0.8s ease-out;
+}
+
+/* Header title: Large, bold, with gradient text effect */
+.header-title {
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 8px;
+  /* Gradient text effect using background-clip */
+  background: linear-gradient(135deg, #60a5fa 0%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+/* Header subtitle: Descriptive text with lighter color */
+.header-subtitle {
+  font-size: 1.1rem;
+  color: #a0aec0;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+/* B.1: Control panel with modern flexbox layout */
+.controls-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 35px;
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(15, 23, 42, 0.9) 100%
+  );
+  border-radius: 14px;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Control group: wraps label and input for semantic grouping */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-group {
+  flex: 1;
+  min-width: 240px;
+  max-width: 400px;
+}
+
+/* Control label: small, uppercase, with accent color */
+.control-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* B.3: Search input styling with focus states */
+.search-input {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(96, 165, 250, 0.3);
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #60a5fa;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
+}
+
+.search-input::placeholder {
+  color: #7f8794;
+}
+
+/* B.3: Page size select dropdown styling */
+.page-size-select {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 2px solid rgba(96, 165, 250, 0.3);
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+.page-size-select option {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 8px;
+}
+
+.page-size-select {
+  appearance: none;
+}
+
+.page-size-select:hover {
+  border-color: #60a5fa;
+}
+
+.page-size-select:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   B.2 & B.3: TABLE RENDERING PIPELINE & STYLING
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Table wrapper: handles horizontal scrolling on mobile devices (B.2) */
+.table-wrapper {
+  max-height: 50vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  margin-bottom: 30px;
+  border: 1px solid rgba(75, 85, 99, 0.2);
+}
+
+/* Main table: foundation for B.2 table rendering pipeline */
+.heroes-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111827;
+  min-width: 1200px;
+}
+
+/* Table header styling: sticky header for scroll context awareness */
+.table-header {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(135deg, #1f2937 0%, #1a2b42 100%);
+  border-bottom: 2px solid rgba(96, 165, 250, 0.2);
+  z-index: 10;
+}
+
+/* Header row cells: sortable indicators and styling (B.3) */
+.header-row th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* B.3: Interactive header with hover effect for sortable columns */
+.header-row th[data-sortable='true']:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+  color: #60a5fa;
+}
+
+/* Non-sortable columns: no hover effect, different styling */
+.header-row th[data-sortable='false'] {
+  cursor: default;
+}
+
+.header-row th[data-sortable='false']:hover {
+  background-color: transparent;
+}
+
+/* B.3: Sort indicator styling (shows asc/desc direction) */
+.sort-indicator {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.8rem;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+/* Active sort indicator: visible when column is being sorted */
+.sort-indicator.active {
+  opacity: 1;
+  color: #fbbf24;
+}
+
+/* Column-specific width optimizations for B.2 rendering */
+.col-icon {
+  width: 60px;
+}
+
+.col-name {
+  width: 120px;
+  min-width: 120px;
+}
+
+.col-fullname {
+  width: 140px;
+  min-width: 140px;
+}
+
+.col-stat {
+  width: 90px;
+  text-align: center;
+}
+
+.col-race {
+  width: 100px;
+}
+
+.col-gender {
+  width: 80px;
+}
+
+.col-height {
+  width: 90px;
+}
+
+.col-weight {
+  width: 90px;
+}
+
+.col-birth {
+  width: 140px;
+}
+
+.col-alignment {
+  width: 100px;
+}
+
+/* B.2: Table body rows rendered by renderTable() utility */
+.table-body {
+  /* Subtle zebra striping for readability */
+}
+
+.table-body tr {
+  border-bottom: 1px solid rgba(75, 85, 99, 0.2);
+  transition: all 0.2s ease;
+}
+
+/* Alternating row colors: subtle visual rhythm */
+.table-body tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.5);
+}
+
+.table-body tr:nth-child(odd) {
+  background-color: rgba(20, 29, 48, 0.3);
+}
+
+/* B.2: Interactive row hover effect for better UX */
+.table-body tr:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+  cursor: pointer;
+  box-shadow: inset 0 0 10px rgba(96, 165, 250, 0.05);
+}
+
+/* Table cells: padding and alignment for data display (B.2) */
+.table-body td {
+  padding: 14px 12px;
+  color: #d1d5db;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+/* Data table cells: handle text overflow gracefully */
+.table-body td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Icon cell: center alignment and image styling */
+.table-body td:first-child {
+  text-align: center;
+  padding: 8px;
+}
+
+.table-body img {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.table-body img:hover {
+  transform: scale(1.1);
+}
+
+/* Stat cells: numeric data centered for alignment */
+.table-body td:nth-child(n + 4):nth-child(-n + 9) {
+  text-align: center;
+  color: #93c5fd;
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   B.3: PAGINATION CONTROLS & FOOTER
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Pagination footer: navigation controls for B.3 */
+.pagination-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.6) 0%,
+    rgba(15, 23, 42, 0.8) 100%
+  );
+  border-radius: 12px;
+  border: 1px solid rgba(75, 85, 99, 0.2);
+  margin-top: 20px;
+}
+
+/* Pagination button: Previous/Next controls */
+.pagination-btn {
+  padding: 11px 22px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Disabled pagination button state: reduced opacity */
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  box-shadow: none;
+}
+
+/* Pagination info: current page indicator */
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #93c5fd;
+}
+
+.page-number {
+  min-width: 50px;
+  text-align: center;
+}
+
+.page-separator {
+  color: #6b7280;
+  margin: 0 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   B.4: HERO DETAIL MODAL (BONUS FEATURE)
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Modal container: full-screen overlay for hero details (B.4) */
+.hero-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.hero-modal.active {
+  display: flex;
+}
+
+/* Modal backdrop: semi-transparent background with blur effect */
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+/* Modal content: card with hero details (B.4) */
+.modal-content {
+  position: relative;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.4s ease;
+}
+
+/* Modal close button: top-right corner X button */
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #e5e7eb;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: rgba(255, 59, 48, 0.8);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Hero detail container: layout wrapper for modal content */
+.hero-detail-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  padding: 40px;
+}
+
+/* Hero image section: large avatar display */
+.hero-image-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(96, 165, 250, 0.2);
+  object-fit: cover;
+}
+
+/* Hero info section: biographical and statistical data */
+.hero-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Hero name in modal: large, prominent heading */
+.hero-modal-name {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa 0%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+/* Hero full name: real identity */
+.hero-modal-fullname {
+  color: #a0aec0;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+/* Stats grid: 2-column layout for power stats display */
+.hero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 20px;
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+/* Individual stat item: label and value pair */
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+/* Hero biography: detailed biographical information */
+.hero-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-bio p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #d1d5db;
+}
+
+.hero-bio strong {
+  color: #60a5fa;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ANIMATIONS & TRANSITIONS
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Slide down animation for header */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in animation for modal backdrop */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide up animation for modal content */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   RESPONSIVE DESIGN: MOBILE & TABLET BREAKPOINTS
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Tablet and below: adjust layout for smaller screens */
+@media (max-width: 1024px) {
+  .controls-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-group {
+    max-width: 100%;
+  }
+
+  .hero-detail-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .hero-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile: aggressive responsive adjustments */
+@media (max-width: 640px) {
+  .app {
+    margin: 20px auto;
+  }
+
+  .header-title {
+    font-size: 1.8rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .controls-panel {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .control-label {
+    font-size: 0.75rem;
+  }
+
+  .search-input,
+  .page-size-select {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .heroes-table {
+    min-width: 100%;
+    font-size: 0.85rem;
+  }
+
+  .table-header th {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+  }
+
+  .table-body td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .table-body img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pagination-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .pagination-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+
+  .hero-detail-container {
+    padding: 16px;
+  }
+
+  .hero-modal-name {
+    font-size: 1.6rem;
+  }
+
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .hero-bio p {
+    font-size: 0.9rem;
+  }
+}

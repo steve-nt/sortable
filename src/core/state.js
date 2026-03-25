@@ -1,77 +1,87 @@
 // src/core/state.js
 
 /**
- * Core application state utilizing lightweight Signals/Pub-Sub pattern.
- * @class StateManager
+ * @typedef {Object} SortState
+ * @property {string} key - Currently sorted key path.
+ * @property {"asc"|"desc"} order - Current sort direction.
  */
-export class StateManager {
-	#state;
-	#listeners;
-
-	/**
-	 * @param {Object} [initialState={}] - Optional initial state overrides
-	 */
-	constructor(initialState = {}) {
-		this.#state = {
-			heroes: [],
-			searchStr: "",
-			searchField: "name",
-			page: 1,
-			pageSize: 20,
-			sort: { key: "name", order: "asc" },
-			activeHeroId: null,
-			...initialState,
-		};
-		this.#listeners = new Set();
-	}
-
-	/**
-	 * @returns {Object} Current immutable state
-	 */
-	get state() {
-		return this.#state;
-	}
-
-	/**
-	 * Registers a listener for state changes.
-	 * @param {Function} callback - Function called with new state
-	 * @returns {Function} Unsubscribe function
-	 */
-	onChange(callback) {
-		this.#listeners.add(callback);
-		return () => this.#listeners.delete(callback);
-	}
-
-	/**
-	 * Performs an immutable partial update of the application state.
-	 * @param {Object} partialState - The fields to update
-	 */
-	update(partialState) {
-		this.#state = { ...this.#state, ...partialState };
-		this.#notify();
-	}
-
-	/**
-	 * Toggles sorting order between asc/desc for a given key.
-	 * @param {string} key - The column key to sort
-	 */
-	toggleSortDirection(key) {
-		let order = "asc";
-		if (this.#state.sort.key === key) {
-			order = this.#state.sort.order === "asc" ? "desc" : "asc";
-		}
-		this.update({ sort: { key, order } });
-	}
-
-	#notify() {
-		for (const listener of this.#listeners) {
-			listener(this.#state);
-		}
-	}
-}
 
 /**
- * Singleton State instance
- * @type {StateManager}
+ * @typedef {Object} AppState
+ * @property {Object[]} heroes - Normalized hero collection.
+ * @property {string} searchStr - User search text.
+ * @property {string} searchField - Selected search field path.
+ * @property {string} searchOperator - Selected search operator.
+ * @property {number} page - Current 1-indexed page.
+ * @property {string} pageSize - Page size as select-compatible token.
+ * @property {SortState} sort - Table sorting state.
+ * @property {number|null} activeHeroId - ID for open hero modal.
  */
-export const State = new StateManager();
+
+/** @type {AppState} */
+let state = {
+  heroes: [],
+  searchStr: "",
+  searchField: "name",
+  searchOperator: "include",
+  page: 1,
+  pageSize: "20",
+  sort: { key: "name", order: "asc" },
+  activeHeroId: null,
+};
+
+/** @type {Set<(nextState: AppState) => void>} */
+const listeners = new Set();
+
+/**
+ * Returns a read-safe snapshot of the current state.
+ * @returns {AppState}
+ */
+export const getState = () => ({ ...state, sort: { ...state.sort } });
+
+/**
+ * Registers a callback for state updates.
+ * @param {(nextState: AppState) => void} callback - Listener callback.
+ * @returns {() => boolean} Unsubscribe function.
+ */
+export const onStateChange = (callback) => {
+  listeners.add(callback);
+  return () => listeners.delete(callback);
+};
+
+/**
+ * Merges a partial update and notifies all subscribers.
+ * @param {Partial<AppState>} partialState - Partial state patch.
+ * @returns {void}
+ */
+export const updateState = (partialState) => {
+  state = { ...state, ...partialState };
+  notify();
+};
+
+/**
+ * Toggles sort direction for the selected key.
+ * @param {string} key - Key path used for sorting.
+ * @returns {void}
+ */
+export const toggleSort = (key) => {
+  let order = "asc";
+
+  if (state.sort.key === key) {
+    order = state.sort.order === "asc" ? "desc" : "asc";
+  }
+
+  updateState({ sort: { key, order } });
+};
+
+/**
+ * Notifies each registered state listener.
+ * @returns {void}
+ */
+const notify = () => {
+  const snapshot = getState();
+
+  for (const listener of listeners) {
+    listener(snapshot);
+  }
+};

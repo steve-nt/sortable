@@ -1,12 +1,17 @@
 // src/core/filtering.js
 
 /**
+ * @typedef {{ [key: string]: any }} FilterableHero
+ */
+
+/**
  * Internal helper to retrieve nested object values using dot notation
- * @param {Object} obj - The object to traverse
+ * @param {FilterableHero} obj - The object to traverse.
  * @param {string} path - The dot notation path (e.g. "biography.fullName")
  * @returns {any} The value at the path or undefined
  */
 const extractNestedValue = (obj, path) => {
+	if (!path) return null;
 	return path.split(".").reduce((acc, part) => acc?.[part], obj);
 };
 
@@ -37,6 +42,7 @@ export const parseOperatorMatch = (valueStr) => {
 			"not equal",
 			"greater than",
 			"lesser than",
+			"less than",
 			"==",
 			"!=",
 			">",
@@ -63,9 +69,10 @@ export const parseOperatorMatch = (valueStr) => {
 	if (["=", "=="].includes(operator)) operator = "equal";
 	if (["!=", "<>"].includes(operator)) operator = "not equal";
 	if (operator === ">") operator = "greater than";
-	if (operator === "<") operator = "lesser than";
+	if (operator === "lesser than") operator = "less than";
+	if (operator === "<") operator = "less than";
 	if (operator === ">=") operator = "greater equal";
-	if (operator === "<=") operator = "lesser equal";
+	if (operator === "<=") operator = "less equal";
 
 	return { field, operator, value: searchVal };
 };
@@ -107,14 +114,23 @@ const levenshteinDistance = (a, b) => {
  * @returns {boolean} Whether the condition is met
  */
 const matchesCondition = (heroValue, operator, targetValue) => {
-	if (heroValue === null || heroValue === undefined) {
-		return targetValue === "null" || targetValue === "";
+	if (
+		heroValue === null ||
+		heroValue === undefined ||
+		heroValue === "" ||
+		heroValue === "-" ||
+		(typeof heroValue === "string" && heroValue.toLowerCase() === "unknown")
+	) {
+		return false;
 	}
 
-	const strHeroVal = String(heroValue).toLowerCase();
+	const strHeroVal =
+		typeof heroValue === "string"
+			? heroValue.toLowerCase()
+			: String(heroValue).toLowerCase();
 	const strTargetVal = String(targetValue).toLowerCase();
 
-	const numHero = parseFloat(heroValue);
+	const numHero = typeof heroValue === "number" ? heroValue : parseFloat(heroValue);
 	const numTarget = parseFloat(targetValue);
 	const isNumeric = !Number.isNaN(numHero) && !Number.isNaN(numTarget);
 
@@ -129,11 +145,11 @@ const matchesCondition = (heroValue, operator, targetValue) => {
 			return isNumeric ? numHero !== numTarget : strHeroVal !== strTargetVal;
 		case "greater than":
 			return isNumeric ? numHero > numTarget : strHeroVal > strTargetVal;
-		case "lesser than":
+		case "less than":
 			return isNumeric ? numHero < numTarget : strHeroVal < strTargetVal;
 		case "greater equal":
 			return isNumeric ? numHero >= numTarget : strHeroVal >= strTargetVal;
-		case "lesser equal":
+		case "less equal":
 			return isNumeric ? numHero <= numTarget : strHeroVal <= strTargetVal;
 		case "fuzzy": {
 			if (strHeroVal.includes(strTargetVal)) return true;
@@ -147,10 +163,10 @@ const matchesCondition = (heroValue, operator, targetValue) => {
 
 /**
  * Iteratively constructs matched records mapped against complex operator tokenization
- * @param {Object[]} heroes - Array of normalized hero data
+ * @param {FilterableHero[]} heroes - Array of normalized hero data.
  * @param {string} searchStr - The user-provided search string
  * @param {string} globalSearchField - Default field to check when none specified
- * @returns {Object[]} The filtered array
+ * @returns {FilterableHero[]} The filtered array.
  */
 export const filterHeroes = (heroes, searchStr, globalSearchField = "name") => {
 	if (!searchStr || searchStr.trim() === "") return heroes;
@@ -165,14 +181,9 @@ export const filterHeroes = (heroes, searchStr, globalSearchField = "name") => {
 			const targetField = field || globalSearchField;
 			const heroValue =
 				targetField === "all"
-					? Object.values(hero)
-							.map((v) => (typeof v === "object" ? JSON.stringify(v) : v))
-							.join(" ")
+					? JSON.stringify(hero).toLowerCase()
 					: extractNestedValue(hero, targetField);
 
-			if (targetField === "all") {
-				return matchesCondition(heroValue, operator, value);
-			}
 			return matchesCondition(heroValue, operator, value);
 		});
 	});
@@ -180,10 +191,10 @@ export const filterHeroes = (heroes, searchStr, globalSearchField = "name") => {
 
 /**
  * Functional pagination slice
- * @param {Object[]} array - The dataset to paginate
+ * @param {FilterableHero[]} array - The dataset to paginate.
  * @param {number} page - The 1-indexed page number
  * @param {number|string} pageSize - Number of items per page or "all"
- * @returns {Object[]} The paginated slice
+ * @returns {FilterableHero[]} The paginated slice.
  */
 export const getPaginatedData = (array, page, pageSize) => {
 	if (pageSize === "all") return array;

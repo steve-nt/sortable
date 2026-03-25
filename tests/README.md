@@ -1,19 +1,31 @@
-# Testing Utilities
+# Test Suite
 
-This folder encapsulates testing for all tracks, ensuring that no slop slips in and no regressions occur when developers merge components. 
+The project uses Node's built-in test runner (`node:test`) with no external test framework dependency.
 
 ## Included Tests
 
-* `track_a.test.js`: Contains robust validations for Data Fetching & State using real Live Data (`all.json`). Employs Node's native `'node:test'` runner. Asserts missing weight sequestering logic & strict parsing.
+- `track_a.test.js`
+	- Uses live API data to verify normalization, filtering, sorting, pagination, and state notifications.
 
-## How to run tests
+- `audit_reference.test.js`
+	- Uses deterministic fixture data to verify audit-style acceptance behaviors:
+		- interactive-like search expectations
+		- field-specific searches
+		- supported operators
+		- separate powerstats columns in main table
+		- no static asc/desc labels in headers (active column only)
+		- missing values sorted last
+		- required table columns in `index.html`
 
-To run the unified testing suite, use the `node --test` framework directly on this folder from the project root:
+## Commands
 
 ```bash
-# Run all tests natively
-node --test tests/
+# Run all tests
+npm test
 
-# Run a specific track test directly
-node --test tests/track_a.test.js
+# Run all test files directly with Node
+node --test tests/*.test.js
+
+# Run one file
+node --test tests/audit_reference.test.js
 ```

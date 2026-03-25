@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Superhero Database - Track B Presentation Layer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- B.1: Main app container with semantic structure -->
+  <main class="app">
+    <!-- Header: Brand and title section (B.1) -->
+    <header class="header">
+      <div class="header-content">
+        <h1 class="header-title">Superhero Database</h1>
+        <p class="header-subtitle">Explore and organize the world's most powerful beings</p>
+      </div>
+    </header>
+
+    <!-- Control Panel: Search and page size selector (B.1, B.3) -->
+    <section class="controls-panel">
+      <!-- Search input with icon styling (B.3) -->
+      <div class="control-group search-group">
+        <label for="searchInput" class="control-label">Search</label>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search by hero name..."
+          aria-label="Search heroes"
+        />
+      </div>
+
+      <!-- Page size selector dropdown (B.3) -->
+      <div class="control-group">
+        <label for="pageSizeSelect" class="control-label">Items per page</label>
+        <select id="pageSizeSelect" class="page-size-select" aria-label="Select page size">
+          <option value="10">10 heroes</option>
+          <option value="20" selected>20 heroes</option>
+          <option value="50">50 heroes</option>
+          <option value="100">100 heroes</option>
+          <option value="all">All heroes</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Table Container: Wrapped in div for horizontal scrolling on mobile (B.2) -->
+    <div class="table-wrapper">
+      <!-- Main data table with semantic markup (B.2) -->
+      <table id="heroesTable" class="heroes-table" role="grid">
+        <!-- Table header with column definitions (B.3 - sorting indicators will be added via JS) -->
+        <thead class="table-header">
+          <tr class="header-row">
+            <!-- Icon column: displays hero avatar image -->
+            <th class="col-icon" data-sortable="false" role="columnheader">Icon</th>
+            <!-- Name column: hero's commonly known name, sortable alphabetically -->
+            <th class="col-name" data-sortable="true" role="columnheader">
+              Name <span class="sort-indicator"></span>
+            </th>
+            <!-- Full Name column: hero's real name, sortable alphabetically -->
+            <th class="col-fullname" data-sortable="true" role="columnheader">
+              Full Name <span class="sort-indicator"></span>
+            </th>
+            <!-- Powerstats: intelligence rating (numeric) -->
+            <th class="col-stat" data-sortable="true" data-field="intelligence" role="columnheader">
+              Intelligence <span class="sort-indicator"></span>
+            </th>
+            <!-- Powerstats: strength rating (numeric) -->
+            <th class="col-stat" data-sortable="true" data-field="strength" role="columnheader">
+              Strength <span class="sort-indicator"></span>
+            </th>
+            <!-- Powerstats: speed rating (numeric) -->
+            <th class="col-stat" data-sortable="true" data-field="speed" role="columnheader">
+              Speed <span class="sort-indicator"></span>
+            </th>
+            <!-- Powerstats: durability rating (numeric) -->
+            <th class="col-stat" data-sortable="true" data-field="durability" role="columnheader">
+              Durability <span class="sort-indicator"></span>
+            </th>
+            <!-- Powerstats: power rating (numeric) -->
+            <th class="col-stat" data-sortable="true" data-field="power" role="columnheader">
+              Power <span class="sort-indicator"></span>
+            </th>
+            <!-- Powerstats: combat rating (numeric) -->
+            <th class="col-stat" data-sortable="true" data-field="combat" role="columnheader">
+              Combat <span class="sort-indicator"></span>
+            </th>
+            <!-- Race column: hero's species/race, sortable alphabetically -->
+            <th class="col-race" data-sortable="true" role="columnheader">
+              Race <span class="sort-indicator"></span>
+            </th>
+            <!-- Gender column: hero's gender, sortable alphabetically -->
+            <th class="col-gender" data-sortable="true" role="columnheader">
+              Gender <span class="sort-indicator"></span>
+            </th>
+            <!-- Height column: hero's height with unit (numeric extraction required), sortable numerically -->
+            <th class="col-height" data-sortable="true" role="columnheader">
+              Height <span class="sort-indicator"></span>
+            </th>
+            <!-- Weight column: hero's weight with unit (numeric extraction required), sortable numerically -->
+            <th class="col-weight" data-sortable="true" role="columnheader">
+              Weight <span class="sort-indicator"></span>
+            </th>
+            <!-- Place of Birth column: hero's birthplace, sortable alphabetically -->
+            <th class="col-birth" data-sortable="true" role="columnheader">
+              Place of Birth <span class="sort-indicator"></span>
+            </th>
+            <!-- Alignment column: hero's moral alignment, sortable alphabetically -->
+            <th class="col-alignment" data-sortable="true" role="columnheader">
+              Alignment <span class="sort-indicator"></span>
+            </th>
+          </tr>
+        </thead>
+
+        <!-- Table body: Rows will be inserted dynamically by renderTable() utility (B.2) -->
+        <tbody id="tableBody" class="table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer: Previous/Next buttons and page indicator (B.3) -->
+    <footer class="pagination-footer">
+      <!-- Previous page button: disabled when on first page -->
+      <button
+        id="prevBtn"
+        class="pagination-btn pagination-prev"
+        aria-label="Go to previous page"
+      >
+        ← Previous
+      </button>
+
+      <!-- Current page indicator: shows "Page X of Y" -->
+      <div class="pagination-info">
+        <span id="pageInfo" class="page-number">Page 1</span>
+        <span class="page-separator"> / </span>
+        <span id="maxPageInfo" class="page-number">Page 1</span>
+      </div>
+
+      <!-- Next page button: disabled when on last page -->
+      <button
+        id="nextBtn"
+        class="pagination-btn pagination-next"
+        aria-label="Go to next page"
+      >
+        Next →
+      </button>
+    </footer>
+  </main>
+
+  <!-- B.4 (Bonus): Modal overlay for hero detail view -->
+  <div id="heroModal" class="hero-modal" role="dialog" aria-hidden="true">
+    <!-- Modal backdrop: click to close -->
+    <div class="modal-backdrop"></div>
+
+    <!-- Modal content wrapper -->
+    <div class="modal-content">
+      <!-- Modal close button (top-right corner) -->
+      <button class="modal-close" aria-label="Close modal">✕</button>
+
+      <!-- Hero detail view container (B.4) -->
+      <div class="hero-detail-container">
+        <!-- Large hero image section -->
+        <div class="hero-image-section">
+          <img id="heroImage" src="" alt="Hero image" class="hero-image" />
+        </div>
+
+        <!-- Hero information section -->
+        <div class="hero-info-section">
+          <!-- Hero name and real identity -->
+          <h2 id="heroName" class="hero-modal-name"></h2>
+          <p id="heroFullName" class="hero-modal-fullname"></p>
+
+          <!-- Detailed statistics grid (B.4) -->
+          <div class="hero-stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Intelligence</span>
+              <span id="modalIntelligence" class="stat-value">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Strength</span>
+              <span id="modalStrength" class="stat-value">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Speed</span>
+              <span id="modalSpeed" class="stat-value">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Durability</span>
+              <span id="modalDurability" class="stat-value">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Power</span>
+              <span id="modalPower" class="stat-value">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Combat</span>
+              <span id="modalCombat" class="stat-value">-</span>
+            </div>
+          </div>
+
+          <!-- Biographical information -->
+          <div class="hero-bio">
+            <p><strong>Race:</strong> <span id="modalRace">Unknown</span></p>
+            <p><strong>Gender:</strong> <span id="modalGender">Unknown</span></p>
+            <p><strong>Height:</strong> <span id="modalHeight">Unknown</span></p>
+            <p><strong>Weight:</strong> <span id="modalWeight">Unknown</span></p>
+            <p><strong>Place of Birth:</strong> <span id="modalBirth">Unknown</span></p>
+            <p><strong>Alignment:</strong> <span id="modalAlignment">Unknown</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application script: Contains all logic for Track B implementation -->
+  <script src="script.js"></script>
+</body>
+</html>

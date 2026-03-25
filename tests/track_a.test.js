@@ -3,7 +3,7 @@ import test from "node:test";
 import { fetchHeroes, parseNumber } from "../src/core/api.js";
 import { filterHeroes, getPaginatedData } from "../src/core/filtering.js";
 import { sortHeroes } from "../src/core/sorting.js";
-import { State } from "../src/core/state.js";
+import { getState, onStateChange, updateState } from "../src/core/state.js";
 
 test("Track A: Data Fetching and Normalization (Using Real API Data)", async (t) => {
 	const result = await fetchHeroes();
@@ -62,6 +62,21 @@ test("Track A: Data Fetching and Normalization (Using Real API Data)", async (t)
 		assert.ok(
 			!allExceptBatman.find((h) => h.name === "Batman"),
 			"Batman should be excluded",
+		);
+	});
+
+	await t.test("Filtering Engine: field-specific and operator syntax", () => {
+		const goodAlignment = filterHeroes(heroesData, "alignment:equal:good");
+		assert.ok(goodAlignment.length > 0, "Should find heroes with good alignment");
+		assert.ok(
+			goodAlignment.every((h) => String(h.alignment).toLowerCase() === "good"),
+			"Field-specific equal should constrain to selected field",
+		);
+
+		const heavierThan100 = filterHeroes(heroesData, "weight:greater than:100");
+		assert.ok(
+			heavierThan100.every((h) => h.weight !== null && h.weight > 100),
+			"Greater-than operator should work for numeric fields",
 		);
 	});
 
@@ -127,13 +142,15 @@ test("Track A: Data Fetching and Normalization (Using Real API Data)", async (t)
 
 	await t.test("State Pub/Sub Mocking (Dependency verification)", () => {
 		let updateCount = 0;
-		const unsubscribe = State.onChange((newState) => {
+		const unsubscribe = onStateChange((newState) => {
 			updateCount++;
 			assert.strictEqual(newState.sort.key, "weight");
 			assert.strictEqual(newState.sort.order, "desc");
 		});
 
-		State.update({ sort: { key: "weight", order: "desc" } });
+		updateState({ sort: { key: "weight", order: "desc" } });
+		const now = getState();
+		assert.strictEqual(now.sort.key, "weight", "State should expose latest sort key");
 
 		assert.strictEqual(
 			updateCount,
